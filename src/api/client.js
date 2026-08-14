@@ -1,4 +1,8 @@
-const BASE = "/api";
+// Local dev goes through Vite's /api proxy (see vite.config.js) so the
+// browser never has to deal with CORS. Static hosting has no server-side
+// proxy, so production needs the real backend URL baked in at build time
+// via VITE_API_URL (Vite only inlines env vars prefixed VITE_).
+const BASE = import.meta.env.VITE_API_URL || "/api";
 
 export class ApiError extends Error {
   constructor(message, status, body) {
