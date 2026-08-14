@@ -109,4 +109,7 @@ export const api = {
   listNotifications: () => request("/notifications"),
   markNotificationRead: (id) => request(`/notifications/${id}/read`, { method: "POST" }),
   markAllNotificationsRead: () => request("/notifications/read-all", { method: "POST" }),
+  listLoanProducts: () => request("/loans/products"),
+  listLoanApplications: () => request("/loans/applications"),
+  createLoanApplication: (data) => request("/loans/applications", { method: "POST", body: data }),
 };

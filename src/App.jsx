@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Transfer from "./pages/Transfer";
 import Kyc from "./pages/Kyc";
 import Notifications from "./pages/Notifications";
+import Loans from "./pages/Loans";
 
 function ProtectedRoute({ children }) {
   const { user, initializing } = useAuth();
@@ -50,6 +51,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Notifications />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/loans"
+        element={
+          <ProtectedRoute>
+            <Loans />
           </ProtectedRoute>
         }
       />

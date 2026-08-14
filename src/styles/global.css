@@ -417,19 +417,27 @@ select {
 
 .status-pill.posted,
 .status-pill.succeeded,
-.status-pill.approved {
+.status-pill.approved,
+.status-pill.disbursed,
+.status-pill.closed,
+.status-pill.paid {
   background: #eaf5ef;
   color: var(--success);
 }
 
 .status-pill.pending,
-.status-pill.processing {
+.status-pill.processing,
+.status-pill.submitted,
+.status-pill.under_review,
+.status-pill.scheduled {
   background: #fbf3e3;
   color: #8a6416;
 }
 
 .status-pill.failed,
-.status-pill.rejected {
+.status-pill.rejected,
+.status-pill.late,
+.status-pill.missed {
   background: #fbeceb;
   color: var(--danger);
 }

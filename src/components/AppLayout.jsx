@@ -24,6 +24,9 @@ export default function AppLayout({ children }) {
           <NavLink to="/notifications" className={({ isActive }) => (isActive ? "active" : "")}>
             Notifications
           </NavLink>
+          <NavLink to="/loans" className={({ isActive }) => (isActive ? "active" : "")}>
+            Loans
+          </NavLink>
         </nav>
         <div>
           {user && (
