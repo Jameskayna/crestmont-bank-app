@@ -106,4 +106,7 @@ export const api = {
   createTransfer: (data) => request("/transfers", { method: "POST", body: data }),
   listKycDocuments: () => request("/kyc/documents"),
   uploadKycDocument: (formData) => request("/kyc/documents", { method: "POST", body: formData }),
+  listNotifications: () => request("/notifications"),
+  markNotificationRead: (id) => request(`/notifications/${id}/read`, { method: "POST" }),
+  markAllNotificationsRead: () => request("/notifications/read-all", { method: "POST" }),
 };

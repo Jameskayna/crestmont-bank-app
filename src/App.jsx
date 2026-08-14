@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Transfer from "./pages/Transfer";
 import Kyc from "./pages/Kyc";
+import Notifications from "./pages/Notifications";
 
 function ProtectedRoute({ children }) {
   const { user, initializing } = useAuth();
@@ -41,6 +42,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Kyc />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <Notifications />
           </ProtectedRoute>
         }
       />
