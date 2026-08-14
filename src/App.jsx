@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Transfer from "./pages/Transfer";
+import Kyc from "./pages/Kyc";
 
 function ProtectedRoute({ children }) {
   const { user, initializing } = useAuth();
@@ -32,6 +33,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Transfer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/kyc"
+        element={
+          <ProtectedRoute>
+            <Kyc />
           </ProtectedRoute>
         }
       />

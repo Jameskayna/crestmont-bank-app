@@ -33,13 +33,17 @@ export function setOnAuthExpired(handler) {
 }
 
 async function rawRequest(path, { method = "GET", body, auth = true } = {}) {
-  const headers = { "Content-Type": "application/json" };
+  const isFormData = body instanceof FormData;
+  const headers = {};
+  // For FormData, let the browser set Content-Type itself (it needs to
+  // include the multipart boundary, which we can't set by hand).
+  if (!isFormData) headers["Content-Type"] = "application/json";
   if (auth && accessToken) headers.Authorization = `Bearer ${accessToken}`;
 
   const res = await fetch(`${BASE}${path}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: isFormData ? body : body ? JSON.stringify(body) : undefined,
   });
 
   let data = null;
@@ -96,4 +100,6 @@ export const api = {
   createAccount: (data) => request("/accounts", { method: "POST", body: data }),
   accountTransactions: (id) => request(`/accounts/${id}/transactions`),
   createTransfer: (data) => request("/transfers", { method: "POST", body: data }),
+  listKycDocuments: () => request("/kyc/documents"),
+  uploadKycDocument: (formData) => request("/kyc/documents", { method: "POST", body: formData }),
 };

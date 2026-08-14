@@ -18,6 +18,9 @@ export default function AppLayout({ children }) {
           <NavLink to="/transfer" className={({ isActive }) => (isActive ? "active" : "")}>
             Transfers
           </NavLink>
+          <NavLink to="/kyc" className={({ isActive }) => (isActive ? "active" : "")}>
+            Identity verification
+          </NavLink>
         </nav>
         <div>
           {user && (
