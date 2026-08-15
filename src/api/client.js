@@ -118,6 +118,7 @@ export const api = {
   staffGetUser: (id) => request(`/staff/users/${id}`),
   staffBlockUser: (id, reason) => request(`/staff/users/${id}/block`, { method: "POST", body: { reason } }),
   staffUnblockUser: (id) => request(`/staff/users/${id}/unblock`, { method: "POST" }),
+  staffPromoteUser: (id) => request(`/staff/users/${id}/promote`, { method: "POST" }),
   staffFreezeAccount: (id, reason) =>
     request(`/staff/accounts/${id}/freeze`, { method: "POST", body: { reason } }),
   staffUnfreezeAccount: (id) => request(`/staff/accounts/${id}/unfreeze`, { method: "POST" }),

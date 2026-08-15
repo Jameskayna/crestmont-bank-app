@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminLayout from "../../components/AdminLayout";
+import ConfirmAction from "../../components/ConfirmAction";
+import { useAuth } from "../../context/AuthContext";
 import { api, ApiError } from "../../api/client";
 
+const ADMIN_ROLES = ["admin", "superadmin"];
+
 export default function StaffUsers() {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
+  const [actionError, setActionError] = useState("");
+
+  const canPromote = currentUser && ADMIN_ROLES.includes(currentUser.role);
 
   async function load(query) {
     try {
@@ -19,12 +27,23 @@ export default function StaffUsers() {
 
   useEffect(() => {
     load("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleSearch(e) {
     e.preventDefault();
     setUsers(null);
     load(search);
+  }
+
+  async function handlePromote(id) {
+    setActionError("");
+    try {
+      await api.staffPromoteUser(id);
+      await load(search);
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Could not promote this user.");
+    }
   }
 
   return (
@@ -34,6 +53,7 @@ export default function StaffUsers() {
       </div>
 
       {error && <div className="form-error">{error}</div>}
+      {actionError && <div className="form-error">{actionError}</div>}
 
       <form onSubmit={handleSearch} style={{ marginBottom: 24, display: "flex", gap: 10 }}>
         <input
@@ -55,13 +75,15 @@ export default function StaffUsers() {
       ) : (
         <div className="ledger">
           {users.map((u) => (
-            <Link
-              to={`/staff/users/${u.id}`}
+            <div
               key={u.id}
               className="ledger-row"
-              style={{ textDecoration: "none", color: "inherit" }}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
             >
-              <div>
+              <Link
+                to={`/staff/users/${u.id}`}
+                style={{ textDecoration: "none", color: "inherit", flex: 1 }}
+              >
                 <div className="ledger-desc">{u.email}</div>
                 <div className="ledger-meta">
                   {u.role}
@@ -72,8 +94,16 @@ export default function StaffUsers() {
                     </span>
                   )}
                 </div>
-              </div>
-            </Link>
+              </Link>
+              {canPromote && !ADMIN_ROLES.includes(u.role) && (
+                <ConfirmAction
+                  label="Make Admin"
+                  confirmLabel="Confirm promotion"
+                  prompt={`Grant ${u.email} full admin access?`}
+                  onConfirm={() => handlePromote(u.id)}
+                />
+              )}
+            </div>
           ))}
         </div>
       )}
