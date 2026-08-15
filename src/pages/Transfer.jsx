@@ -78,16 +78,16 @@ export default function Transfer() {
             </select>
           </div>
           <div className="field">
-            <label htmlFor="to">To account ID</label>
+            <label htmlFor="to">To account number</label>
             <input
               id="to"
               type="text"
-              placeholder="Destination account UUID"
+              placeholder="Destination account number"
               required
               value={toAccount}
               onChange={(e) => setToAccount(e.target.value)}
             />
-            <p className="field-hint">The recipient's account ID, not their account number.</p>
+            <p className="field-hint">The recipient's account number, e.g. 4932.</p>
           </div>
           <div className="field">
             <label htmlFor="amount">Amount (USD)</label>
