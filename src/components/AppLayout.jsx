@@ -27,6 +27,15 @@ export default function AppLayout({ children }) {
           <NavLink to="/loans" className={({ isActive }) => (isActive ? "active" : "")}>
             Loans
           </NavLink>
+          {user && user.role !== "customer" && (
+            <NavLink
+              to="/staff/users"
+              className={({ isActive }) => (isActive ? "active" : "")}
+              style={{ marginTop: 10, color: "var(--gold-light)" }}
+            >
+              Staff console
+            </NavLink>
+          )}
         </nav>
         <div>
           {user && (

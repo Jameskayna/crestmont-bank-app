@@ -420,7 +420,8 @@ select {
 .status-pill.approved,
 .status-pill.disbursed,
 .status-pill.closed,
-.status-pill.paid {
+.status-pill.paid,
+.status-pill.verified {
   background: #eaf5ef;
   color: var(--success);
 }
@@ -429,7 +430,9 @@ select {
 .status-pill.processing,
 .status-pill.submitted,
 .status-pill.under_review,
-.status-pill.scheduled {
+.status-pill.scheduled,
+.status-pill.unverified,
+.status-pill.pending_approval {
   background: #fbf3e3;
   color: #8a6416;
 }

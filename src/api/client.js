@@ -112,4 +112,35 @@ export const api = {
   listLoanProducts: () => request("/loans/products"),
   listLoanApplications: () => request("/loans/applications"),
   createLoanApplication: (data) => request("/loans/applications", { method: "POST", body: data }),
+
+  // Staff console
+  staffListUsers: (search) => request(`/staff/users${search ? `?search=${encodeURIComponent(search)}` : ""}`),
+  staffGetUser: (id) => request(`/staff/users/${id}`),
+  staffBlockUser: (id, reason) => request(`/staff/users/${id}/block`, { method: "POST", body: { reason } }),
+  staffUnblockUser: (id) => request(`/staff/users/${id}/unblock`, { method: "POST" }),
+  staffFreezeAccount: (id, reason) =>
+    request(`/staff/accounts/${id}/freeze`, { method: "POST", body: { reason } }),
+  staffUnfreezeAccount: (id) => request(`/staff/accounts/${id}/unfreeze`, { method: "POST" }),
+  staffListAdjustments: () => request("/staff/adjustments"),
+  staffCreateAdjustment: (data) => request("/staff/adjustments", { method: "POST", body: data }),
+  staffApproveAdjustment: (id) => request(`/staff/adjustments/${id}/approve`, { method: "POST" }),
+  staffRejectAdjustment: (id, reason) =>
+    request(`/staff/adjustments/${id}/reject`, { method: "POST", body: { reason } }),
+  staffListWithdrawals: () => request("/staff/withdrawals"),
+  staffApproveWithdrawal: (id) => request(`/staff/withdrawals/${id}/approve`, { method: "POST" }),
+  staffRejectWithdrawal: (id, reason) =>
+    request(`/staff/withdrawals/${id}/reject`, { method: "POST", body: { reason } }),
+  staffListKycDocuments: () => request("/staff/kyc/documents"),
+  staffApproveKycDocument: (id) => request(`/staff/kyc/documents/${id}/approve`, { method: "POST" }),
+  staffRejectKycDocument: (id, reason) =>
+    request(`/staff/kyc/documents/${id}/reject`, { method: "POST", body: { reason } }),
+  staffListLoanApplications: () => request("/staff/loans/applications"),
+  staffApproveLoan: (id) => request(`/staff/loans/applications/${id}/approve`, { method: "POST" }),
+  staffRejectLoan: (id, reason) =>
+    request(`/staff/loans/applications/${id}/reject`, { method: "POST", body: { reason } }),
+  staffListLoanProducts: () => request("/staff/loan-products"),
+  staffCreateLoanProduct: (data) => request("/staff/loan-products", { method: "POST", body: data }),
+  staffUpdateLoanProduct: (id, data) =>
+    request(`/staff/loan-products/${id}`, { method: "PATCH", body: data }),
+  staffListAuditLog: () => request("/staff/audit-log"),
 };
