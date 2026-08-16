@@ -98,6 +98,15 @@ export async function request(path, options = {}) {
 
 export const api = {
   register: (data) => request("/auth/register", { method: "POST", body: data, auth: false }),
+  verifyEmail: (token) => request("/auth/verify-email", { method: "POST", body: { token }, auth: false }),
+  requestPasswordReset: (email) =>
+    request("/auth/password-reset/request", { method: "POST", body: { email }, auth: false }),
+  confirmPasswordReset: (token, newPassword) =>
+    request("/auth/password-reset/confirm", {
+      method: "POST",
+      body: { token, new_password: newPassword },
+      auth: false,
+    }),
   login: (data) => request("/auth/login", { method: "POST", body: data, auth: false }),
   me: () => request("/auth/me"),
   listAccounts: () => request("/accounts"),
