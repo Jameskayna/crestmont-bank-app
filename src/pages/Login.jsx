@@ -73,6 +73,11 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <p className="field-hint">
+                  <Link to="/forgot-password" className="btn-link">
+                    Forgot password?
+                  </Link>
+                </p>
               </div>
             </>
           ) : (
