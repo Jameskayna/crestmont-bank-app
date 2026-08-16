@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Transfer from "./pages/Transfer";
+import Cards from "./pages/Cards";
 import Kyc from "./pages/Kyc";
 import Notifications from "./pages/Notifications";
 import Loans from "./pages/Loans";
@@ -44,6 +45,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Transfer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/cards"
+        element={
+          <ProtectedRoute>
+            <Cards />
           </ProtectedRoute>
         }
       />

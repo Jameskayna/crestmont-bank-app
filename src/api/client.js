@@ -103,7 +103,8 @@ export const api = {
   listAccounts: () => request("/accounts"),
   createAccount: (data) => request("/accounts", { method: "POST", body: data }),
   accountTransactions: (id) => request(`/accounts/${id}/transactions`),
-  accountCards: (id) => request(`/accounts/${id}/cards`),
+  listCards: () => request("/cards"),
+  requestCard: (data) => request("/cards", { method: "POST", body: data }),
   createTransfer: (data) => request("/transfers", { method: "POST", body: data }),
   listKycDocuments: () => request("/kyc/documents"),
   uploadKycDocument: (formData) => request("/kyc/documents", { method: "POST", body: formData }),
@@ -146,6 +147,8 @@ export const api = {
     request(`/staff/loan-products/${id}`, { method: "PATCH", body: data }),
   staffListAuditLog: () => request("/staff/audit-log"),
   staffListCards: () => request("/staff/cards"),
+  staffApproveCard: (id) => request(`/staff/cards/${id}/approve`, { method: "POST" }),
+  staffRejectCard: (id, reason) => request(`/staff/cards/${id}/reject`, { method: "POST", body: { reason } }),
   staffBlockCard: (id, reason) => request(`/staff/cards/${id}/block`, { method: "POST", body: { reason } }),
   staffReactivateCard: (id) => request(`/staff/cards/${id}/reactivate`, { method: "POST" }),
 

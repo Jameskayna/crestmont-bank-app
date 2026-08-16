@@ -41,6 +41,26 @@ export default function StaffCards() {
     }
   }
 
+  async function approve(id) {
+    setError("");
+    try {
+      await api.staffApproveCard(id);
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not approve this request.");
+    }
+  }
+
+  async function reject(id, reason) {
+    setError("");
+    try {
+      await api.staffRejectCard(id, reason);
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not reject this request.");
+    }
+  }
+
   return (
     <AdminLayout>
       <div className="page-header">
@@ -67,15 +87,24 @@ export default function StaffCards() {
                     {c.cardholder_name} — {c.cardholder_email}
                   </div>
                   <div className="ledger-meta money">
-                    {c.masked_number}
-                    {c.brand && ` (${c.brand})`}
+                    {c.masked_number ? c.masked_number : `${c.brand_display} ${c.card_type}`}
                     <span className={`status-pill ${c.status}`}>{c.status}</span>
                   </div>
-                  {c.status === "blocked" && c.block_reason && (
-                    <div className="ledger-meta">Reason: {c.block_reason}</div>
-                  )}
+                  <div className="ledger-meta">
+                    {c.status === "pending" && `Requested ${new Date(c.created_at).toLocaleString()}`}
+                    {c.status === "blocked" && c.block_reason && `Reason: ${c.block_reason}`}
+                    {c.status === "rejected" && c.rejection_reason && `Reason: ${c.rejection_reason}`}
+                  </div>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
+                  {c.status === "pending" && (
+                    <>
+                      <button className="btn-gold" onClick={() => approve(c.id)}>
+                        Approve
+                      </button>
+                      <RejectAction onReject={(reason) => reject(c.id, reason)} />
+                    </>
+                  )}
                   {c.status === "active" && (
                     <RejectAction label="Block" onReject={(reason) => block(c.id, reason)} />
                   )}

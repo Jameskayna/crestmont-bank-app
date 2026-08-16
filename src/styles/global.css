@@ -615,6 +615,15 @@ select {
   max-width: 260px;
 }
 
+.card-visual-rejected {
+  border-color: var(--danger);
+  background: #fbeceb;
+}
+
+.card-visual-rejected .card-visual-pending-title {
+  color: var(--danger);
+}
+
 /* Transfer form */
 
 .panel {

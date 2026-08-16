@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import AppLayout from "../components/AppLayout";
-import CardVisual from "../components/CardVisual";
 import { api, ApiError } from "../api/client";
 import { formatCents, formatSignedCents } from "../utils/money";
 
@@ -14,7 +13,6 @@ export default function Dashboard() {
   const [accounts, setAccounts] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [transactions, setTransactions] = useState(null);
-  const [cards, setCards] = useState(null);
   const [notices, setNotices] = useState([]);
   const [error, setError] = useState("");
 
@@ -46,7 +44,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (!selectedId) {
       setTransactions(null);
-      setCards(null);
       return;
     }
     let cancelled = false;
@@ -57,14 +54,6 @@ export default function Dashboard() {
       })
       .catch((err) => {
         if (!cancelled) setError(err instanceof ApiError ? err.message : "Could not load transactions.");
-      });
-    api
-      .accountCards(selectedId)
-      .then((data) => {
-        if (!cancelled) setCards(data);
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err instanceof ApiError ? err.message : "Could not load cards.");
       });
     return () => {
       cancelled = true;
@@ -163,17 +152,6 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-      )}
-
-      {selectedAccount && cards && cards.length > 0 && (
-        <>
-          <h2 style={{ fontSize: "1.2rem", marginBottom: 14 }}>Card — {selectedAccount.name}</h2>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 20, marginBottom: 36 }}>
-            {cards.map((card) => (
-              <CardVisual card={card} key={card.id} />
-            ))}
-          </div>
-        </>
       )}
 
       {selectedAccount && (
