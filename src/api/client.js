@@ -103,6 +103,7 @@ export const api = {
   listAccounts: () => request("/accounts"),
   createAccount: (data) => request("/accounts", { method: "POST", body: data }),
   accountTransactions: (id) => request(`/accounts/${id}/transactions`),
+  accountCards: (id) => request(`/accounts/${id}/cards`),
   createTransfer: (data) => request("/transfers", { method: "POST", body: data }),
   listKycDocuments: () => request("/kyc/documents"),
   uploadKycDocument: (formData) => request("/kyc/documents", { method: "POST", body: formData }),

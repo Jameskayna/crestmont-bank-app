@@ -501,6 +501,120 @@ select {
   color: var(--danger);
 }
 
+/* Card visual (customer dashboard) */
+
+.card-visual {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 1.586 / 1;
+  border-radius: 18px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(11, 27, 54, 0.28);
+}
+
+.card-visual-active {
+  background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy-mid) 55%, #16345f 100%);
+  color: var(--ivory);
+}
+
+.card-visual-active::after {
+  /* Faint sheen, like an embossed card catching light */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.08) 0%, transparent 35%);
+  pointer-events: none;
+}
+
+.card-visual-inactive {
+  background: linear-gradient(135deg, #3a3f4a 0%, #23262c 100%);
+  color: rgba(250, 248, 244, 0.75);
+}
+
+.card-visual-ribbon {
+  position: absolute;
+  top: 18px;
+  right: -34px;
+  transform: rotate(40deg);
+  background: var(--danger);
+  color: var(--white);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 40px;
+}
+
+.card-visual-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
+}
+
+.card-visual-issuer {
+  font-size: 1rem;
+}
+
+.card-visual-brand {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+.card-visual-number {
+  font-size: 1.35rem;
+  letter-spacing: 0.12em;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+}
+
+.card-visual-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.card-visual-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin-bottom: 3px;
+}
+
+.card-visual-value {
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.card-visual-pending {
+  border: 1.5px dashed var(--border);
+  background: var(--white);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.card-visual-pending-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--navy-deep);
+  margin-bottom: 6px;
+}
+
+.card-visual-pending-subtitle {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  max-width: 260px;
+}
+
 /* Transfer form */
 
 .panel {
