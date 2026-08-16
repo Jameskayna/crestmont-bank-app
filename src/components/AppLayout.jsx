@@ -7,7 +7,7 @@ export default function AppLayout({ children }) {
   return (
     <div className="app-shell customer-theme">
       <aside className="app-sidebar">
-        <div>
+        <div className="sidebar-brand">
           <div className="brand-mark">C</div>
           <div className="brand-word">Crestmont</div>
           <div className="brand-tag">Reserve Bank</div>
@@ -41,7 +41,7 @@ export default function AppLayout({ children }) {
             </NavLink>
           )}
         </nav>
-        <div>
+        <div className="sidebar-footer">
           {user && <p className="app-sidebar-email">{user.email}</p>}
           <button className="app-sidebar-signout" onClick={logout}>
             Sign out

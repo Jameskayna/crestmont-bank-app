@@ -32,6 +32,11 @@ body {
   background: var(--ivory);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  /* Backstop, not the fix: individual containers below get real
+     min-width overrides so content wraps instead of forcing width.
+     This just guarantees nothing can force horizontal scroll even
+     if a future addition misses that. */
+  overflow-x: hidden;
 }
 
 #root {
@@ -291,6 +296,11 @@ select {
 
 .app-main {
   flex: 1;
+  /* Flex items default to min-width: auto, which refuses to shrink
+     below their content's intrinsic width — the actual cause of
+     horizontal overflow on narrow screens. This lets it shrink and
+     wrap instead. */
+  min-width: 0;
   padding: 40px 48px;
   max-width: 1100px;
 }
@@ -791,6 +801,82 @@ select {
   color: var(--ink);
 }
 
+/* Below this width, a fixed 240px sidebar leaves too little room for
+   any real content (this app has no responsive breakpoints at all
+   otherwise — confirmed while diagnosing the horizontal-scroll bug).
+   Stack the sidebar above the content as a compact bar instead of
+   beside it. */
+
+@media (max-width: 768px) {
+  .customer-theme.app-shell {
+    flex-direction: column;
+  }
+
+  .customer-theme .app-sidebar {
+    width: 100%;
+    padding: 16px 20px;
+    gap: 14px;
+  }
+
+  .customer-theme .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .customer-theme .brand-word {
+    margin-top: 0;
+  }
+
+  .customer-theme .brand-tag {
+    display: none;
+  }
+
+  .customer-theme .app-sidebar nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .customer-theme .app-sidebar nav a,
+  .customer-theme .app-sidebar nav button {
+    width: auto;
+    padding: 7px 12px;
+    font-size: 0.82rem;
+  }
+
+  .customer-theme .sidebar-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .customer-theme .app-sidebar-email {
+    margin-bottom: 0;
+  }
+
+  .customer-theme .app-main {
+    max-width: 100%;
+    padding: 24px 20px;
+  }
+
+  .customer-theme .wallet-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .customer-theme .quick-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .customer-theme .balance-strip {
+    padding: 24px;
+  }
+
+  .customer-theme .bs-amount {
+    font-size: 2rem;
+  }
+}
+
 /* Accounts (Overview account cards, used before an account is
    selected as well as inside the wallet row) */
 
@@ -977,7 +1063,10 @@ select {
 
 .wallet-row {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  /* minmax(0, 1fr), not plain 1fr — grid tracks otherwise default to
+     a content-based automatic minimum and refuse to shrink below it,
+     forcing the page wider on narrow screens. */
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 22px;
   margin-bottom: 26px;
   align-items: start;
@@ -1025,7 +1114,7 @@ select {
 
 .quick-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   margin-bottom: 26px;
 }
