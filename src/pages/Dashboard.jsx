@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [accounts, setAccounts] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [transactions, setTransactions] = useState(null);
+  const [notices, setNotices] = useState([]);
   const [error, setError] = useState("");
 
   const [showCreate, setShowCreate] = useState(false);
@@ -34,6 +35,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadAccounts();
+    api
+      .listActiveNotices()
+      .then(setNotices)
+      .catch(() => {}); // banner is non-critical — a failed fetch shouldn't block the dashboard
   }, []);
 
   useEffect(() => {
@@ -76,6 +81,13 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
+      {notices.map((n) => (
+        <div className={`notice-banner ${n.severity}`} key={n.id}>
+          <div className="notice-banner-title">{n.title}</div>
+          <div className="notice-banner-message">{n.message}</div>
+        </div>
+      ))}
+
       <div className="page-header">
         <h1>Overview</h1>
         {accounts && accounts.length > 0 && (

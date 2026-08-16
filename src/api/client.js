@@ -144,4 +144,14 @@ export const api = {
   staffUpdateLoanProduct: (id, data) =>
     request(`/staff/loan-products/${id}`, { method: "PATCH", body: data }),
   staffListAuditLog: () => request("/staff/audit-log"),
+  staffListCards: () => request("/staff/cards"),
+  staffBlockCard: (id, reason) => request(`/staff/cards/${id}/block`, { method: "POST", body: { reason } }),
+  staffReactivateCard: (id) => request(`/staff/cards/${id}/reactivate`, { method: "POST" }),
+
+  // Notices
+  listActiveNotices: () => request("/notices/active"),
+  staffListNotices: () => request("/staff/notices"),
+  staffCreateNotice: (data) => request("/staff/notices", { method: "POST", body: data }),
+  staffUpdateNotice: (id, data) => request(`/staff/notices/${id}`, { method: "PATCH", body: data }),
+  staffDeleteNotice: (id) => request(`/staff/notices/${id}`, { method: "DELETE" }),
 };

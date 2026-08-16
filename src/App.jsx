@@ -10,8 +10,10 @@ import Notifications from "./pages/Notifications";
 import Loans from "./pages/Loans";
 import StaffUsers from "./pages/staff/StaffUsers";
 import StaffUserDetail from "./pages/staff/StaffUserDetail";
+import StaffCards from "./pages/staff/StaffCards";
 import StaffTransactions from "./pages/staff/StaffTransactions";
 import StaffLoans from "./pages/staff/StaffLoans";
+import StaffNotices from "./pages/staff/StaffNotices";
 import StaffSettings from "./pages/staff/StaffSettings";
 import StaffAuditLog from "./pages/staff/StaffAuditLog";
 
@@ -86,6 +88,14 @@ export default function App() {
         }
       />
       <Route
+        path="/staff/cards"
+        element={
+          <StaffRoute>
+            <StaffCards />
+          </StaffRoute>
+        }
+      />
+      <Route
         path="/staff/transactions"
         element={
           <StaffRoute>
@@ -98,6 +108,14 @@ export default function App() {
         element={
           <StaffRoute>
             <StaffLoans />
+          </StaffRoute>
+        }
+      />
+      <Route
+        path="/staff/notices"
+        element={
+          <StaffRoute>
+            <StaffNotices />
           </StaffRoute>
         }
       />

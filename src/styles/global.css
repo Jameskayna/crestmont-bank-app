@@ -440,8 +440,64 @@ select {
 .status-pill.failed,
 .status-pill.rejected,
 .status-pill.late,
-.status-pill.missed {
+.status-pill.missed,
+.status-pill.blocked {
   background: #fbeceb;
+  color: var(--danger);
+}
+
+.status-pill.severity-info {
+  background: #eaf0fb;
+  color: var(--navy-mid);
+}
+
+.status-pill.severity-warning {
+  background: #fbf0df;
+  color: #8a5a16;
+}
+
+.status-pill.severity-urgent {
+  background: #fbeceb;
+  color: var(--danger);
+}
+
+/* Notice banner (customer dashboard) */
+
+.notice-banner {
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border: 1px solid;
+}
+
+.notice-banner:last-of-type {
+  margin-bottom: 28px;
+}
+
+.notice-banner-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.notice-banner-message {
+  font-size: 0.9rem;
+}
+
+.notice-banner.info {
+  background: #eaf0fb;
+  border-color: #b9cbf0;
+  color: var(--navy-mid);
+}
+
+.notice-banner.warning {
+  background: #fbf0df;
+  border-color: var(--gold);
+  color: #8a5a16;
+}
+
+.notice-banner.urgent {
+  background: #fbeceb;
+  border-color: var(--danger);
   color: var(--danger);
 }
 
