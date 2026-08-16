@@ -10,6 +10,7 @@
   --border: #e4e0d6;
   --danger: #a3342b;
   --success: #1f6f4a;
+  --unread-tint: rgba(180, 146, 63, 0.06);
 
   --font-display: "Playfair Display", Georgia, serif;
   --font-body: "Inter", -apple-system, sans-serif;
@@ -280,6 +281,12 @@ select {
   background: rgba(180, 146, 63, 0.18);
   color: var(--gold-light);
   font-weight: 500;
+}
+
+.app-sidebar-email {
+  color: rgba(250, 248, 244, 0.55);
+  font-size: 0.78rem;
+  margin-bottom: 10px;
 }
 
 .app-main {
@@ -561,7 +568,7 @@ select {
   font-size: 1rem;
 }
 
-.card-visual-brand {
+.card-visual-network {
   font-family: var(--font-body);
   font-size: 0.78rem;
   letter-spacing: 0.08em;
@@ -632,4 +639,505 @@ select {
   border-radius: 10px;
   padding: 28px;
   max-width: 480px;
+}
+
+/* ============================================================
+   Customer theme — applied only via AppLayout's outer
+   .app-shell.customer-theme wrapper, so the staff console
+   (AdminLayout) and auth pages (Login/Register/VerifyEmail/
+   ResetPassword/ForgotPassword) keep the original navy/gold
+   system untouched. Most shared classes above (.panel, .field,
+   .btn-*, .ledger, .status-pill, .form-error/.form-success,
+   .notice-banner, .card-visual) already read colors and fonts
+   through the CSS custom properties redefined below, so they
+   re-theme automatically; the rules after the token block are
+   the ones that hardcode a hex value or a structural difference
+   (sidebar, buttons' pill shape, new dashboard components) and
+   need an explicit override.
+   ============================================================ */
+
+.customer-theme {
+  --navy-deep: #0b6e4f;
+  --navy-mid: #08543c;
+  --gold: #f2a93b;
+  --gold-light: #f5bc63;
+  --amber-soft: #fce8c6;
+  --ivory: #eef1f0;
+  --white: #ffffff;
+  --ink: #12261f;
+  --ink-muted: #5b6e66;
+  --border: #dce3df;
+  --danger: #b3453a;
+  --success: #0b6e4f;
+  --unread-tint: rgba(242, 169, 59, 0.1);
+
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --shadow-panel: 0 24px 50px -28px rgba(11, 40, 30, 0.28);
+
+  background: var(--ivory);
+}
+
+.customer-theme h1,
+.customer-theme h2,
+.customer-theme h3 {
+  color: var(--ink);
+}
+
+/* Buttons become rounded pills with bold labels, matching the
+   reference's .btn base style. */
+
+.customer-theme .btn-primary,
+.customer-theme .btn-gold,
+.customer-theme .btn-secondary {
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.customer-theme .btn-gold {
+  color: var(--ink);
+}
+
+.customer-theme .form-error {
+  background: #f8e6e3;
+  border-radius: 16px;
+}
+
+.customer-theme .form-success {
+  background: #e2efe8;
+  border-radius: 16px;
+}
+
+.customer-theme .empty-state {
+  border-radius: var(--radius-md, 20px);
+}
+
+/* Sidebar: light/paper background instead of a dark panel, pill
+   nav items, square brand mark badge. */
+
+.customer-theme.app-shell {
+  background: var(--ivory);
+}
+
+.customer-theme .app-sidebar {
+  background: transparent;
+  color: var(--ink);
+  padding: 34px 22px;
+  gap: 40px;
+}
+
+.customer-theme .brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--navy-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.customer-theme .brand-word {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-top: 12px;
+}
+
+.customer-theme .brand-tag {
+  font-size: 0.7rem;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.customer-theme .app-sidebar nav {
+  gap: 2px;
+}
+
+.customer-theme .app-sidebar nav a,
+.customer-theme .app-sidebar nav button {
+  border-radius: 12px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  padding: 11px 14px;
+}
+
+.customer-theme .app-sidebar nav a:hover,
+.customer-theme .app-sidebar nav button:hover {
+  background: rgba(11, 110, 79, 0.08);
+  color: var(--ink);
+}
+
+.customer-theme .app-sidebar nav a.active {
+  background: var(--navy-deep);
+  color: white;
+}
+
+.customer-theme .app-sidebar-email {
+  color: var(--ink-muted);
+}
+
+.customer-theme .app-sidebar-signout {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--ink);
+}
+
+/* Accounts (Overview account cards, used before an account is
+   selected as well as inside the wallet row) */
+
+.customer-theme .account-card .account-name,
+.customer-theme .account-card .account-balance {
+  color: var(--ink);
+}
+
+.customer-theme .account-card.selected {
+  border-color: var(--navy-deep);
+  box-shadow: 0 0 0 1px var(--navy-deep);
+}
+
+.customer-theme .account-card:hover {
+  border-color: var(--navy-deep);
+}
+
+/* Status pills / notice banners: remap the hardcoded tint colors
+   onto the emerald/amber palette. */
+
+.customer-theme .status-pill.posted,
+.customer-theme .status-pill.succeeded,
+.customer-theme .status-pill.approved,
+.customer-theme .status-pill.disbursed,
+.customer-theme .status-pill.closed,
+.customer-theme .status-pill.paid,
+.customer-theme .status-pill.verified {
+  background: #e2efe8;
+}
+
+.customer-theme .status-pill.pending,
+.customer-theme .status-pill.processing,
+.customer-theme .status-pill.submitted,
+.customer-theme .status-pill.under_review,
+.customer-theme .status-pill.scheduled,
+.customer-theme .status-pill.unverified,
+.customer-theme .status-pill.pending_approval {
+  background: var(--amber-soft);
+  color: #8a5a0e;
+}
+
+.customer-theme .status-pill.failed,
+.customer-theme .status-pill.rejected,
+.customer-theme .status-pill.late,
+.customer-theme .status-pill.missed,
+.customer-theme .status-pill.blocked {
+  background: #f8e6e3;
+}
+
+.customer-theme .status-pill.severity-info {
+  background: #e2efe8;
+  color: var(--navy-deep);
+}
+
+.customer-theme .status-pill.severity-warning {
+  background: #fce8c6;
+  color: #8a5a0e;
+}
+
+.customer-theme .status-pill.severity-urgent {
+  background: #f8e6e3;
+}
+
+.customer-theme .notice-banner {
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.customer-theme .notice-banner.info {
+  background: #e2efe8;
+  border-color: #b7d9c8;
+  color: var(--navy-deep);
+}
+
+.customer-theme .notice-banner.warning {
+  background: #fce8c6;
+  border-color: #f0d19c;
+  color: #8a5a0e;
+}
+
+.customer-theme .notice-banner.urgent {
+  background: #f8e6e3;
+  border-color: #e3b3aa;
+}
+
+/* Card visual: emerald gradient + chip + italic network wordmark,
+   matching the reference's .debit-card. */
+
+.customer-theme .card-visual {
+  border-radius: 22px;
+  box-shadow: var(--shadow-panel);
+}
+
+.customer-theme .card-visual-active {
+  background: linear-gradient(135deg, #12403a, #0b6e4f 55%, #1e8f63);
+}
+
+.customer-theme .card-visual-network {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
+  color: white;
+  font-size: 1rem;
+}
+
+.customer-theme .card-visual-chip {
+  width: 34px;
+  height: 25px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--gold), #d68c1d);
+}
+
+.customer-theme .card-visual-rejected {
+  background: #f8e6e3;
+}
+
+/* ---- New Overview components (balance strip, wallet row, quick
+   actions, activity feed) — no equivalents in the old design. ---- */
+
+.balance-strip {
+  background: var(--navy-deep);
+  border-radius: 30px;
+  padding: 32px 36px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.bs-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
+
+.bs-amount {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.bs-amount span {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 1.4rem;
+}
+
+.bs-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-amber {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.btn-outline-light {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.btn-amber,
+.btn-outline-light {
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+}
+
+.btn-outline-light {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.wallet-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 22px;
+  margin-bottom: 26px;
+  align-items: start;
+}
+
+.acc-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-panel);
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.acc-card:last-child {
+  margin-bottom: 0;
+}
+
+.acc-card.selected {
+  border-color: var(--navy-deep);
+  box-shadow: 0 0 0 1px var(--navy-deep);
+}
+
+.acc-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.acc-sub {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+.acc-val {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.quick-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.quick-tile {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px;
+  text-decoration: none;
+  display: block;
+  transition: border-color 0.15s;
+}
+
+.quick-tile:hover {
+  border-color: var(--navy-deep);
+}
+
+.quick-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+}
+
+.quick-icon.qi-1 {
+  background: rgba(11, 110, 79, 0.1);
+}
+
+.quick-icon.qi-2 {
+  background: var(--amber-soft);
+}
+
+.quick-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.quick-sub {
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: var(--ink);
+}
+
+.activity-list {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.activity-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-row:last-child {
+  border-bottom: none;
+}
+
+.activity-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.activity-icon.ai-in {
+  background: rgba(11, 110, 79, 0.1);
+}
+
+.activity-icon.ai-out {
+  background: var(--amber-soft);
+}
+
+.activity-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+
+.activity-amount {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.activity-amount.amt-plus {
+  color: var(--navy-deep);
 }

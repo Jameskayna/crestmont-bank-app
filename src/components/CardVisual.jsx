@@ -37,7 +37,7 @@ export default function CardVisual({ card, onRequestAgain }) {
       )}
       <div className="card-visual-top">
         <span className="card-visual-issuer">Crestmont Reserve</span>
-        {card.brand_display && !isBlocked && <span className="card-visual-brand">{card.brand_display}</span>}
+        {!isBlocked && <div className="card-visual-chip" />}
       </div>
       <div className="card-visual-number money">{card.masked_number}</div>
       <div className="card-visual-bottom">
@@ -50,6 +50,9 @@ export default function CardVisual({ card, onRequestAgain }) {
             <div className="card-visual-label">Expires</div>
             <div className="card-visual-value money">{card.expiry_display}</div>
           </div>
+        )}
+        {!isBlocked && card.brand_display && (
+          <div className="card-visual-network">{card.brand_display}</div>
         )}
       </div>
     </div>

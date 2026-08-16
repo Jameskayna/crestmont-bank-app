@@ -5,11 +5,12 @@ export default function AppLayout({ children }) {
   const { user, logout } = useAuth();
 
   return (
-    <div className="app-shell">
+    <div className="app-shell customer-theme">
       <aside className="app-sidebar">
-        <div className="brand">
-          Crestmont Reserve
-          <span>Bank</span>
+        <div>
+          <div className="brand-mark">C</div>
+          <div className="brand-word">Crestmont</div>
+          <div className="brand-tag">Reserve Bank</div>
         </div>
         <nav>
           <NavLink to="/dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
@@ -41,10 +42,10 @@ export default function AppLayout({ children }) {
           )}
         </nav>
         <div>
-          {user && (
-            <p style={{ color: "rgba(250,248,244,0.55)", fontSize: "0.78rem", marginBottom: 10 }}>{user.email}</p>
-          )}
-          <button onClick={logout}>Sign out</button>
+          {user && <p className="app-sidebar-email">{user.email}</p>}
+          <button className="app-sidebar-signout" onClick={logout}>
+            Sign out
+          </button>
         </div>
       </aside>
       <main className="app-main">{children}</main>

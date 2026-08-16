@@ -62,7 +62,7 @@ export default function Notifications() {
             <div
               className="ledger-row"
               key={n.id}
-              style={{ background: n.is_read ? "transparent" : "rgba(180, 146, 63, 0.06)", cursor: n.is_read ? "default" : "pointer" }}
+              style={{ background: n.is_read ? "transparent" : "var(--unread-tint)", cursor: n.is_read ? "default" : "pointer" }}
               onClick={() => !n.is_read && handleMarkRead(n.id)}
             >
               <div>

@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import CardVisual from "../components/CardVisual";
+import { useAuth } from "../context/AuthContext";
 import { api, ApiError } from "../api/client";
 import { formatCents, formatSignedCents } from "../utils/money";
 
@@ -9,10 +12,26 @@ const ACCOUNT_TYPES = [
   { value: "credit", label: "Credit" },
 ];
 
+const QUICK_ACTIONS = [
+  { to: "/cards", icon: "💳", tone: "qi-1", label: "Request card", sub: "Visa · Mastercard · Verve" },
+  { to: "/loans", icon: "📈", tone: "qi-2", label: "Apply for loan", sub: "Check available rates" },
+  { to: "/kyc", icon: "🪪", tone: "qi-1", label: "Verify identity", sub: "Unlock full access" },
+  { to: "/transfer", icon: "↗", tone: "qi-2", label: "Transfer funds", sub: "To any account" },
+];
+
+function greeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 export default function Dashboard() {
+  const { user } = useAuth();
   const [accounts, setAccounts] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [transactions, setTransactions] = useState(null);
+  const [cards, setCards] = useState([]);
   const [notices, setNotices] = useState([]);
   const [error, setError] = useState("");
 
@@ -39,6 +58,10 @@ export default function Dashboard() {
       .listActiveNotices()
       .then(setNotices)
       .catch(() => {}); // banner is non-critical — a failed fetch shouldn't block the dashboard
+    api
+      .listCards()
+      .then(setCards)
+      .catch(() => {}); // card teaser is non-critical too
   }, []);
 
   useEffect(() => {
@@ -78,9 +101,22 @@ export default function Dashboard() {
   }
 
   const selectedAccount = accounts?.find((a) => a.id === selectedId);
+  const activeCard = cards.find((c) => c.status === "active");
+  const totalCents = (accounts || []).reduce((sum, a) => sum + a.balance_cents, 0);
+  const currency = accounts?.[0]?.currency || "USD";
+  const displayName = user?.first_name || user?.email || "";
 
   return (
     <AppLayout>
+      <div className="topbar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
+        <div>
+          <div className="greet-eyebrow" style={{ fontSize: "0.78rem", color: "var(--ink-muted)", fontWeight: 600 }}>
+            {greeting()}
+          </div>
+          <h1 style={{ marginTop: 3, marginBottom: 0 }}>Welcome back{displayName ? `, ${displayName}` : ""}</h1>
+        </div>
+      </div>
+
       {notices.map((n) => (
         <div className={`notice-banner ${n.severity}`} key={n.id}>
           <div className="notice-banner-title">{n.title}</div>
@@ -88,16 +124,24 @@ export default function Dashboard() {
         </div>
       ))}
 
-      <div className="page-header">
-        <h1>Overview</h1>
-        {accounts && accounts.length > 0 && (
-          <button className="btn-secondary" onClick={() => setShowCreate((s) => !s)}>
-            {showCreate ? "Cancel" : "Open another account"}
-          </button>
-        )}
-      </div>
-
       {error && <div className="form-error">{error}</div>}
+
+      {accounts && accounts.length > 0 && (
+        <div className="balance-strip">
+          <div>
+            <div className="bs-label">Total balance</div>
+            <div className="bs-amount">{formatCents(totalCents, currency)}</div>
+          </div>
+          <div className="bs-actions">
+            <Link to="/transfer" className="btn-amber" style={{ textDecoration: "none" }}>
+              Send money
+            </Link>
+            <button className="btn-outline-light" onClick={() => setShowCreate((s) => !s)}>
+              {showCreate ? "Cancel" : "Open account"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {showCreate && (
         <form className="panel" style={{ marginBottom: 28 }} onSubmit={handleCreateAccount}>
@@ -133,52 +177,63 @@ export default function Dashboard() {
           )}
         </div>
       ) : (
-        <div className="account-grid">
-          {accounts.map((account) => (
-            <div
-              key={account.id}
-              className={`account-card${account.id === selectedId ? " selected" : ""}`}
-              onClick={() => setSelectedId(account.id)}
-            >
-              <div className="account-type">{account.type}</div>
-              <div className="account-name">{account.name}</div>
-              <div className="account-balance money">{formatCents(account.balance_cents, account.currency)}</div>
-              <div className="account-number">
-                Account •••• {account.account_number.slice(-4)}
-                <span className="status-pill posted" style={{ marginLeft: 8 }}>
-                  {account.status}
-                </span>
+        <div className="wallet-row" style={activeCard ? undefined : { gridTemplateColumns: "1fr" }}>
+          <div>
+            {accounts.map((account) => (
+              <div
+                key={account.id}
+                className={`acc-card${account.id === selectedId ? " selected" : ""}`}
+                onClick={() => setSelectedId(account.id)}
+              >
+                <div>
+                  <div className="acc-name">{account.name}</div>
+                  <div className="acc-sub">•••• {account.account_number.slice(-4)}</div>
+                </div>
+                <div className="acc-val money">{formatCents(account.balance_cents, account.currency)}</div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          {activeCard && <CardVisual card={activeCard} />}
         </div>
       )}
 
+      <div className="quick-row">
+        {QUICK_ACTIONS.map((q) => (
+          <Link to={q.to} className="quick-tile" key={q.to}>
+            <div className={`quick-icon ${q.tone}`}>{q.icon}</div>
+            <div className="quick-label">{q.label}</div>
+            <div className="quick-sub">{q.sub}</div>
+          </Link>
+        ))}
+      </div>
+
       {selectedAccount && (
         <>
-          <h2 style={{ fontSize: "1.2rem", marginBottom: 14 }}>
-            Recent activity — {selectedAccount.name}
-          </h2>
+          <div className="section-title">Recent activity — {selectedAccount.name}</div>
           {transactions === null ? (
             <p>Loading transactions…</p>
           ) : transactions.length === 0 ? (
             <div className="empty-state">No transactions on this account yet.</div>
           ) : (
-            <div className="ledger">
-              {transactions.map((tx) => (
-                <div className="ledger-row" key={tx.id}>
-                  <div>
-                    <div className="ledger-desc">{tx.description}</div>
-                    <div className="ledger-meta">
-                      {new Date(tx.created_at).toLocaleString()}
-                      <span className={`status-pill ${tx.status}`}>{tx.status}</span>
+            <div className="activity-list">
+              {transactions.map((tx) => {
+                const isCredit = tx.amount_cents >= 0;
+                return (
+                  <div className="activity-row" key={tx.id}>
+                    <div className={`activity-icon ${isCredit ? "ai-in" : "ai-out"}`}>{isCredit ? "💰" : "↗"}</div>
+                    <div style={{ flex: 1 }}>
+                      <div className="activity-name">{tx.description}</div>
+                      <div className="activity-time">
+                        {new Date(tx.created_at).toLocaleString()}
+                        <span className={`status-pill ${tx.status}`}>{tx.status}</span>
+                      </div>
+                    </div>
+                    <div className={`activity-amount money ${isCredit ? "amt-plus" : ""}`}>
+                      {formatSignedCents(tx.amount_cents, selectedAccount.currency)}
                     </div>
                   </div>
-                  <div className={`ledger-amount money ${tx.amount_cents >= 0 ? "credit" : "debit"}`}>
-                    {formatSignedCents(tx.amount_cents, selectedAccount.currency)}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </>
