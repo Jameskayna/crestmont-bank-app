@@ -46,6 +46,16 @@ export default function StaffUsers() {
     }
   }
 
+  async function handleDemote(id) {
+    setActionError("");
+    try {
+      await api.staffDemoteUser(id);
+      await load(search);
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Could not revoke admin access for this user.");
+    }
+  }
+
   return (
     <AdminLayout>
       <div className="page-header">
@@ -101,6 +111,14 @@ export default function StaffUsers() {
                   confirmLabel="Confirm promotion"
                   prompt={`Grant ${u.email} full admin access?`}
                   onConfirm={() => handlePromote(u.id)}
+                />
+              )}
+              {canPromote && ADMIN_ROLES.includes(u.role) && u.id !== currentUser.id && (
+                <ConfirmAction
+                  label="Revoke Admin"
+                  confirmLabel="Confirm revoke"
+                  prompt={`Revoke admin access for ${u.email}?`}
+                  onConfirm={() => handleDemote(u.id)}
                 />
               )}
             </div>

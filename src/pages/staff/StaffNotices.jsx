@@ -10,7 +10,12 @@ const SEVERITIES = [
   { value: "urgent", label: "Urgent" },
 ];
 
-const emptyForm = { title: "", message: "", severity: "info" };
+const emptyForm = { title: "", message: "", severity: "info", audience: "all", targetUsers: [] };
+
+function userLabel(u) {
+  const name = [u.first_name, u.last_name].filter(Boolean).join(" ");
+  return name ? `${name} (${u.email})` : u.email;
+}
 
 export default function StaffNotices() {
   const { user } = useAuth();
@@ -23,6 +28,10 @@ export default function StaffNotices() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
+
+  const [userQuery, setUserQuery] = useState("");
+  const [userResults, setUserResults] = useState(null);
+  const [searching, setSearching] = useState(false);
 
   async function load() {
     try {
@@ -44,26 +53,74 @@ export default function StaffNotices() {
   function startCreate() {
     setForm(emptyForm);
     setEditingId(null);
+    setUserQuery("");
+    setUserResults(null);
     setShowForm(true);
   }
 
   function startEdit(notice) {
-    setForm({ title: notice.title, message: notice.message, severity: notice.severity });
+    setForm({
+      title: notice.title,
+      message: notice.message,
+      severity: notice.severity,
+      audience: notice.audience,
+      targetUsers: notice.target_users || [],
+    });
     setEditingId(notice.id);
+    setUserQuery("");
+    setUserResults(null);
     setShowForm(true);
+  }
+
+  async function handleUserSearch(e) {
+    e.preventDefault();
+    setSearching(true);
+    try {
+      const data = await api.staffListUsers(userQuery);
+      setUserResults(data);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not search users.");
+    } finally {
+      setSearching(false);
+    }
+  }
+
+  function addTargetUser(u) {
+    if (form.targetUsers.some((t) => t.id === u.id)) return;
+    update("targetUsers", [...form.targetUsers, u]);
+  }
+
+  function removeTargetUser(id) {
+    update(
+      "targetUsers",
+      form.targetUsers.filter((t) => t.id !== id)
+    );
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (form.audience === "specific" && form.targetUsers.length === 0) {
+      setError("Select at least one user for a specific-users notice.");
+      return;
+    }
+
     setSubmitting(true);
+    const payload = {
+      title: form.title,
+      message: form.message,
+      severity: form.severity,
+      audience: form.audience,
+      target_user_ids: form.targetUsers.map((u) => u.id),
+    };
     try {
       if (editingId) {
-        await api.staffUpdateNotice(editingId, form);
+        await api.staffUpdateNotice(editingId, payload);
         setSuccess("Notice updated.");
       } else {
-        await api.staffCreateNotice(form);
+        await api.staffCreateNotice(payload);
         setSuccess("Notice created.");
       }
       setForm(emptyForm);
@@ -115,7 +172,7 @@ export default function StaffNotices() {
       {success && <div className="form-success">{success}</div>}
 
       {showForm && (
-        <form className="panel" style={{ marginBottom: 32 }} onSubmit={handleSubmit}>
+        <form className="panel" style={{ marginBottom: 32, maxWidth: 560 }} onSubmit={handleSubmit}>
           <div className="field">
             <label htmlFor="title">Title</label>
             <input id="title" required value={form.title} onChange={(e) => update("title", e.target.value)} />
@@ -149,6 +206,98 @@ export default function StaffNotices() {
               ))}
             </select>
           </div>
+
+          <div className="field">
+            <label>Audience</label>
+            <div style={{ display: "flex", gap: 16, marginTop: 4 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+                <input
+                  type="radio"
+                  name="audience"
+                  value="all"
+                  checked={form.audience === "all"}
+                  onChange={() => update("audience", "all")}
+                />
+                All customers
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 400 }}>
+                <input
+                  type="radio"
+                  name="audience"
+                  value="specific"
+                  checked={form.audience === "specific"}
+                  onChange={() => update("audience", "specific")}
+                />
+                Specific users
+              </label>
+            </div>
+          </div>
+
+          {form.audience === "specific" && (
+            <div className="field">
+              <label>Target users</label>
+
+              {form.targetUsers.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+                  {form.targetUsers.map((u) => (
+                    <span
+                      key={u.id}
+                      className="status-pill verified"
+                      style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 0 }}
+                    >
+                      {userLabel(u)}
+                      <button
+                        type="button"
+                        className="btn-link"
+                        style={{ color: "inherit" }}
+                        onClick={() => removeTargetUser(u.id)}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: 8 }}>
+                <input
+                  type="text"
+                  placeholder="Search by name or email"
+                  value={userQuery}
+                  onChange={(e) => setUserQuery(e.target.value)}
+                />
+                <button className="btn-secondary" type="button" onClick={handleUserSearch} disabled={searching}>
+                  {searching ? "Searching…" : "Search"}
+                </button>
+              </div>
+
+              {userResults !== null && (
+                <div className="ledger" style={{ marginTop: 10, maxHeight: 220, overflowY: "auto" }}>
+                  {userResults.length === 0 ? (
+                    <div style={{ padding: 14, fontSize: "0.85rem", color: "var(--ink-muted)" }}>No users found.</div>
+                  ) : (
+                    userResults.map((u) => (
+                      <div
+                        className="ledger-row"
+                        key={u.id}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => addTargetUser(u)}
+                      >
+                        <div>
+                          <div className="ledger-desc">{userLabel(u)}</div>
+                          <div className="ledger-meta">{u.role}</div>
+                        </div>
+                        <button type="button" className="btn-link">
+                          {form.targetUsers.some((t) => t.id === u.id) ? "Added" : "Add"}
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           <button className="btn-gold" type="submit" disabled={submitting}>
             {submitting ? "Saving…" : editingId ? "Save changes" : "Create notice"}
           </button>
@@ -172,6 +321,11 @@ export default function StaffNotices() {
                   </span>
                 </div>
                 <div className="ledger-meta">{n.message}</div>
+                <div className="ledger-meta">
+                  {n.audience === "specific"
+                    ? `${n.target_users.length} specific user${n.target_users.length === 1 ? "" : "s"}`
+                    : "All customers"}
+                </div>
               </div>
               {canManage && (
                 <div style={{ display: "flex", gap: 8 }}>
