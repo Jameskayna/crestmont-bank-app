@@ -5,11 +5,16 @@ import RejectAction from "../../components/RejectAction";
 import { api, ApiError } from "../../api/client";
 import { formatCents } from "../../utils/money";
 
+function todayIsoDate() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function AdjustmentForm({ accountId, onDone }) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
   const [direction, setDirection] = useState("credit");
   const [reason, setReason] = useState("");
+  const [transactionDate, setTransactionDate] = useState(todayIsoDate());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
@@ -20,6 +25,8 @@ function AdjustmentForm({ accountId, onDone }) {
       </button>
     );
   }
+
+  const isBackdated = transactionDate !== todayIsoDate();
 
   async function submit(e) {
     e.preventDefault();
@@ -35,10 +42,14 @@ function AdjustmentForm({ accountId, onDone }) {
         account: accountId,
         amount_cents: direction === "credit" ? cents : -cents,
         reason,
+        // Only sent when it actually differs from today — an ordinary,
+        // same-day adjustment doesn't need to carry a redundant date.
+        ...(isBackdated ? { transaction_date: transactionDate } : {}),
       });
       setOpen(false);
       setAmount("");
       setReason("");
+      setTransactionDate(todayIsoDate());
       onDone();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not submit the adjustment.");
@@ -72,12 +83,29 @@ function AdjustmentForm({ accountId, onDone }) {
         style={{ width: 220 }}
         required
       />
+      <div>
+        <label style={{ fontSize: "0.72rem", color: "var(--ink-muted)", display: "block", marginBottom: 2 }}>
+          Transaction date
+        </label>
+        <input
+          type="date"
+          value={transactionDate}
+          max={todayIsoDate()}
+          onChange={(e) => setTransactionDate(e.target.value)}
+        />
+      </div>
       <button className="btn-gold" type="submit" disabled={submitting}>
         {submitting ? "Submitting…" : "Submit"}
       </button>
       <button className="btn-link" type="button" onClick={() => setOpen(false)}>
         Cancel
       </button>
+      {isBackdated && (
+        <p className="field-hint" style={{ width: "100%", margin: 0 }}>
+          This will be recorded as happening on {transactionDate}, not today — make sure the reason above explains
+          why (e.g. "wire transfer received {transactionDate}, not logged at the time").
+        </p>
+      )}
     </form>
   );
 }

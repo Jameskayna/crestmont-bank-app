@@ -5,6 +5,7 @@ import CardVisual from "../components/CardVisual";
 import { useAuth } from "../context/AuthContext";
 import { api, ApiError } from "../api/client";
 import { formatCents, formatSignedCents } from "../utils/money";
+import { transactionDateLabel } from "../utils/dates";
 
 const ACCOUNT_TYPES = [
   { value: "checking", label: "Checking" },
@@ -224,7 +225,7 @@ export default function Dashboard() {
                     <div style={{ flex: 1 }}>
                       <div className="activity-name">{tx.description}</div>
                       <div className="activity-time">
-                        {new Date(tx.created_at).toLocaleString()}
+                        {transactionDateLabel(tx)}
                         <span className={`status-pill ${tx.status}`}>{tx.status}</span>
                       </div>
                     </div>

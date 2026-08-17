@@ -3,6 +3,7 @@ import AdminLayout from "../../components/AdminLayout";
 import RejectAction from "../../components/RejectAction";
 import { api, ApiError } from "../../api/client";
 import { formatSignedCents, formatCents } from "../../utils/money";
+import { transactionDateLabel } from "../../utils/dates";
 
 export default function StaffTransactions() {
   const [adjustments, setAdjustments] = useState(null);
@@ -92,6 +93,7 @@ export default function StaffTransactions() {
                   <div className="ledger-meta">
                     {a.reason} · requested by {a.requested_by_email}
                   </div>
+                  <div className="ledger-meta">{transactionDateLabel(a)}</div>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button className="btn-gold" onClick={() => approveAdjustment(a.id)}>
@@ -151,6 +153,7 @@ export default function StaffTransactions() {
                     {a.reason}
                     <span className={`status-pill ${a.status}`}>{a.status.replace("_", " ")}</span>
                   </div>
+                  <div className="ledger-meta">{transactionDateLabel(a)}</div>
                 </div>
               </div>
             ))}
