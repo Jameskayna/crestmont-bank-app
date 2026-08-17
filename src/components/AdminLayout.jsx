@@ -7,9 +7,11 @@ export default function AdminLayout({ children }) {
   return (
     <div className="app-shell">
       <aside className="app-sidebar">
-        <div className="brand">
-          Crestmont Reserve
-          <span>Staff Console</span>
+        <div className="sidebar-brand">
+          <div className="brand">
+            Crestmont Reserve
+            <span>Staff Console</span>
+          </div>
         </div>
         <nav>
           <NavLink to="/staff/users" className={({ isActive }) => (isActive ? "active" : "")}>
@@ -37,13 +39,15 @@ export default function AdminLayout({ children }) {
             ← Back to app
           </NavLink>
         </nav>
-        <div>
+        <div className="sidebar-footer">
           {user && (
-            <p style={{ color: "rgba(250,248,244,0.55)", fontSize: "0.78rem", marginBottom: 10 }}>
+            <p className="app-sidebar-email">
               {user.email} · {user.role}
             </p>
           )}
-          <button onClick={logout}>Sign out</button>
+          <button className="app-sidebar-signout" onClick={logout}>
+            Sign out
+          </button>
         </div>
       </aside>
       <main className="app-main">{children}</main>
