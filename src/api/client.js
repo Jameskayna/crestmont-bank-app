@@ -108,13 +108,20 @@ export const api = {
       auth: false,
     }),
   login: (data) => request("/auth/login", { method: "POST", body: data, auth: false }),
+  verifyLoginOtp: (data) => request("/auth/login/verify-otp", { method: "POST", body: data, auth: false }),
+  resendLoginOtp: (email) =>
+    request("/auth/login/resend-otp", { method: "POST", body: { email }, auth: false }),
   me: () => request("/auth/me"),
   listAccounts: () => request("/accounts"),
   createAccount: (data) => request("/accounts", { method: "POST", body: data }),
   accountTransactions: (id) => request(`/accounts/${id}/transactions`),
   listCards: () => request("/cards"),
   requestCard: (data) => request("/cards", { method: "POST", body: data }),
-  createTransfer: (data) => request("/transfers", { method: "POST", body: data }),
+  initiateTransfer: (data) => request("/transfers/initiate", { method: "POST", body: data }),
+  confirmTransfer: (transferIntentId, code) =>
+    request("/transfers/confirm", { method: "POST", body: { transfer_intent_id: transferIntentId, code } }),
+  resendTransferOtp: (transferIntentId) =>
+    request("/transfers/resend", { method: "POST", body: { transfer_intent_id: transferIntentId } }),
   listKycDocuments: () => request("/kyc/documents"),
   uploadKycDocument: (formData) => request("/kyc/documents", { method: "POST", body: formData }),
   listNotifications: () => request("/notifications"),
@@ -129,6 +136,8 @@ export const api = {
   staffGetUser: (id) => request(`/staff/users/${id}`),
   staffBlockUser: (id, reason) => request(`/staff/users/${id}/block`, { method: "POST", body: { reason } }),
   staffUnblockUser: (id) => request(`/staff/users/${id}/unblock`, { method: "POST" }),
+  staffClearLoginOtp: (id, reason) =>
+    request(`/staff/users/${id}/clear-login-otp`, { method: "POST", body: { reason } }),
   staffPromoteUser: (id) => request(`/staff/users/${id}/promote`, { method: "POST" }),
   staffDemoteUser: (id) => request(`/staff/users/${id}/demote`, { method: "POST" }),
   staffFreezeAccount: (id, reason) =>

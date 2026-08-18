@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import AppLayout from "../components/AppLayout";
+import OtpField from "../components/OtpField";
 import { api, ApiError } from "../api/client";
+import { formatCents } from "../utils/money";
 
 export default function Transfer() {
   const [accounts, setAccounts] = useState(null);
@@ -12,6 +14,14 @@ export default function Transfer() {
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // "form" -> "otp" once the transfer is initiated and a code has been
+  // emailed. No money moves and nothing is posted to the ledger until the
+  // code is confirmed — pendingTransfer only remembers what to show while
+  // that confirmation is in flight.
+  const [step, setStep] = useState("form");
+  const [pendingTransfer, setPendingTransfer] = useState(null);
+  const [code, setCode] = useState("");
+
   useEffect(() => {
     api
       .listAccounts()
@@ -22,7 +32,7 @@ export default function Transfer() {
       .catch((err) => setError(err instanceof ApiError ? err.message : "Could not load accounts."));
   }, []);
 
-  async function handleSubmit(e) {
+  async function handleInitiate(e) {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -35,21 +45,45 @@ export default function Transfer() {
 
     setSubmitting(true);
     try {
-      await api.createTransfer({
+      const result = await api.initiateTransfer({
         from_account: fromAccount,
         to_account: toAccount.trim(),
         amount_cents: amountCents,
-        note,
       });
-      setSuccess("Transfer submitted.");
-      setToAccount("");
-      setAmount("");
-      setNote("");
+      setPendingTransfer({ id: result.transfer_intent_id, toAccount: toAccount.trim(), amountCents });
+      setStep("otp");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not submit the transfer.");
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleConfirm(e) {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+    try {
+      await api.confirmTransfer(pendingTransfer.id, code);
+      setSuccess("Transfer sent.");
+      setStep("form");
+      setPendingTransfer(null);
+      setCode("");
+      setToAccount("");
+      setAmount("");
+      setNote("");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not confirm the transfer.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function handleCancelOtp() {
+    setStep("form");
+    setPendingTransfer(null);
+    setCode("");
+    setError("");
   }
 
   return (
@@ -65,8 +99,8 @@ export default function Transfer() {
         <p>Loading accounts…</p>
       ) : accounts.length === 0 ? (
         <div className="empty-state">Open an account first before transferring funds.</div>
-      ) : (
-        <form className="panel" onSubmit={handleSubmit}>
+      ) : step === "form" ? (
+        <form className="panel" onSubmit={handleInitiate}>
           <div className="field">
             <label htmlFor="from">From account</label>
             <select id="from" value={fromAccount} onChange={(e) => setFromAccount(e.target.value)} required>
@@ -108,6 +142,23 @@ export default function Transfer() {
           <button className="btn-gold" type="submit" disabled={submitting}>
             {submitting ? "Sending…" : "Send transfer"}
           </button>
+        </form>
+      ) : (
+        <form className="panel" onSubmit={handleConfirm}>
+          <p className="field-hint">
+            We sent a 6-digit code to your email to confirm sending{" "}
+            <span className="money">{formatCents(pendingTransfer.amountCents)}</span> to account ••••{" "}
+            {pendingTransfer.toAccount.slice(-4)}. Nothing has been sent yet.
+          </p>
+          <OtpField id="transfer-otp" value={code} onChange={setCode} onResend={() => api.resendTransferOtp(pendingTransfer.id)} />
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="btn-gold" type="submit" disabled={submitting}>
+              {submitting ? "Confirming…" : "Confirm transfer"}
+            </button>
+            <button className="btn-link" type="button" onClick={handleCancelOtp}>
+              Cancel
+            </button>
+          </div>
         </form>
       )}
     </AppLayout>

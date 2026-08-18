@@ -150,6 +150,16 @@ export default function StaffUserDetail() {
     }
   }
 
+  async function handleClearLoginOtp(reason) {
+    setActionError("");
+    try {
+      await api.staffClearLoginOtp(id, reason);
+      await load();
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : "Could not clear this user's login verification.");
+    }
+  }
+
   async function handleFreeze(accountId, reason) {
     setActionError("");
     try {
@@ -236,6 +246,13 @@ export default function StaffUserDetail() {
         ) : (
           <RejectAction label="Block login" onReject={handleBlock} />
         )}
+        <p className="field-hint" style={{ marginTop: 14, marginBottom: 6 }}>
+          If this user is stuck at the "check your email" step during login
+          (e.g. their registered address is wrong or unreachable), clear
+          their pending code so they can request a fresh one on their next
+          attempt. This does not skip email verification — it just resets it.
+        </p>
+        <RejectAction label="Clear login verification" onReject={handleClearLoginOtp} />
       </div>
 
       <h2 style={{ fontSize: "1.2rem", marginBottom: 14 }}>Accounts</h2>

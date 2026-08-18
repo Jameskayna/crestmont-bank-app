@@ -46,17 +46,27 @@ export function AuthProvider({ children }) {
     setUser(sessionUser);
   }
 
-  async function login({ email, password, totpCode }) {
-    const data = await api.login({
+  // Password is only step 1 now: the backend always emails a one-time code
+  // before login can complete (requires_email_otp), and also flags whether
+  // this account's authenticator-app 2FA needs to be entered alongside it
+  // (requires_2fa). Session state is never set here — only verifyLoginOtp,
+  // once the code (and TOTP, if flagged) checks out, actually logs in.
+  async function login({ email, password }) {
+    const data = await api.login({ email, password });
+    return { email, requiresTwoFactor: !!data.requires_2fa };
+  }
+
+  async function verifyLoginOtp({ email, code, totpCode }) {
+    const data = await api.verifyLoginOtp({
       email,
-      password,
+      code,
       ...(totpCode ? { totp_code: totpCode } : {}),
     });
-    if (data.requires_2fa) {
-      return { requiresTwoFactor: true };
-    }
     applySession(data);
-    return { requiresTwoFactor: false };
+  }
+
+  async function resendLoginOtp(email) {
+    return api.resendLoginOtp(email);
   }
 
   async function register(fields) {
@@ -67,7 +77,7 @@ export function AuthProvider({ children }) {
     clearSession();
   }
 
-  const value = { user, initializing, login, register, logout, setUser };
+  const value = { user, initializing, login, verifyLoginOtp, resendLoginOtp, register, logout, setUser };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
